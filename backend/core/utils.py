@@ -7,14 +7,11 @@ def check_ip_availability(ip_address: str, timeout: int = 1000) -> bool:
     Timeout is in milliseconds.
     """
     param = '-n' if platform.system().lower() == 'windows' else '-c'
-    # timeout in ping command is usually in ms for Windows (-w) or s for Linux (-W)
-    # We use subprocess.call which is blocking.
     
     command = ['ping', param, '1', ip_address]
     if platform.system().lower() == 'windows':
         command.extend(['-w', str(timeout)])
     else:
-        # Linux ping -W is in seconds
         command.extend(['-W', str(max(1, timeout // 1000))])
 
     try:

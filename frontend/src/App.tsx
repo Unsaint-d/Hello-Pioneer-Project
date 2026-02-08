@@ -77,9 +77,8 @@ export default function App() {
       setIsTransitioning(true);
       const timer = setTimeout(() => {
         setActivePanel(rightPanelMode);
-        // Small delay to ensure content swap happens while invisible, then fade in
         setTimeout(() => setIsTransitioning(false), 50);
-      }, 200); // Match transition duration
+      }, 200);
       return () => clearTimeout(timer);
     }
   }, [rightPanelMode, activePanel]);
@@ -88,16 +87,12 @@ export default function App() {
     const handleMouseMove = (e: MouseEvent) => {
       if (!isResizing) return;
       
-      // We use the map container's parent to calculate the width
       const container = mapContainerRef.current?.parentElement;
       if (!container) return;
       
       const containerRect = container.getBoundingClientRect();
-      // Calculate new percentage based on mouse position relative to container
-      // Subtract half of the resizer width (12px) to center it under the cursor roughly
       let newWidth = ((e.clientX - containerRect.left) / containerRect.width) * 100;
       
-      // Clamp values (min 20%, max 80%)
       if (newWidth < 70) newWidth = 70;
       if (newWidth > 80) newWidth = 80;
       
@@ -413,7 +408,6 @@ export default function App() {
     return () => clearInterval(interval);
   }, [apiBase, state.connectionStatus, hasAskedToConnect, autoConnectEnabled, connect]);
 
-  // Reset asked flag when disconnected (manual or spontaneous) so we can ask again if drone is found
   useEffect(() => {
     if (state.connectionStatus === 'DISCONNECTED') {
       setHasAskedToConnect(false);
@@ -607,7 +601,6 @@ export default function App() {
                <p className="text-[10px] font-black opacity-30 uppercase tracking-[0.3em] mt-1">Drone Control System v0.1</p>
              </div>
              
-             {/* View Toggle Buttons - Moved here */}
             <div className={`flex items-center gap-1 p-1 h-11 border-2 border-black rounded-2xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] ${state.darkMode ? 'bg-zinc-900 border-zinc-700' : 'bg-white'} hidden md:flex`}>
               <button
                 onClick={() => setRightPanelMode('plan')}

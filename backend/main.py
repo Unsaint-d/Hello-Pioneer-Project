@@ -1,8 +1,14 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from endpoints import connection, telemetry, control, mission, camera
+from endpoints import connection, telemetry, control, mission, camera, processors
+from processors.manager import plugin_manager
 
 app = FastAPI()
+
+@app.on_event("startup")
+async def startup_event():
+    print("Discovering processors...")
+    plugin_manager.discover_plugins()
 
 app.add_middleware(
     CORSMiddleware,
@@ -17,6 +23,7 @@ app.include_router(telemetry.router)
 app.include_router(control.router)
 app.include_router(mission.router)
 app.include_router(camera.router)
+app.include_router(processors.router)
 
 if __name__ == "__main__":
     import uvicorn

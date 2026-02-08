@@ -33,7 +33,6 @@ class DroneService:
         Возвращает:
             bool: True, если соединение установлено успешно, иначе False.
         """
-        # 1. Проверка доступности IP
         is_available = False
         for i in range(3):
             if check_ip_availability(settings.DRONE_IP):
@@ -46,11 +45,9 @@ class DroneService:
             self.log_message(f"IP {settings.DRONE_IP} недоступен")
             return False
 
-        # 2. Подключение
         if not self.connect():
              return False
         
-        # 3. Ожидание подтверждения соединения
         start_time = time.time()
         while time.time() - start_time < 5.0:
             if self.is_connected():

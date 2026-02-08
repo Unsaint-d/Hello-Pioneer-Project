@@ -30,13 +30,11 @@ class MissionService:
              if self.mission_thread and self.mission_thread.is_alive():
                  raise RuntimeError("Миссия уже выполняется")
              else:
-                 # Очистка "призрачного" состояния
                  self.mission_running = False
 
         if not plan.points:
              raise ValueError("В плане миссии нет точек")
              
-        # Конвертируем Pydantic модели в словари для совместимости с внутренней логикой
         route = [point.model_dump() for point in plan.points]
 
         self.mission_thread = threading.Thread(target=self._mission_task, args=(route,))
@@ -55,7 +53,6 @@ class MissionService:
         Останавливает текущую миссию, если она идет.
         """
         self.stop_mission()
-        # Запускаем в отдельном потоке, чтобы не блокировать запрос
         threading.Thread(target=self._land_and_disarm_task).start()
 
     def _land_and_disarm_task(self) -> None:
@@ -124,7 +121,7 @@ class MissionService:
         Выполняет действие в точке. Возвращает обновленный yaw.
         """
         action_type = action.get('type')
-        params = action.get('params', {}) or {} # Handle None
+        params = action.get('params', {}) or {}
         
         if action_type == 'rotate':
             angle_deg = float(params.get('angle', 0.0))
@@ -212,7 +209,6 @@ class MissionService:
         except Exception as e:
              self.drone_service.log_message(f"Ошибка посадки: {e}")
 
-# Singleton
 mission_service = MissionService(get_drone_service(), get_route_service())
 
 def get_mission_service() -> MissionService:
