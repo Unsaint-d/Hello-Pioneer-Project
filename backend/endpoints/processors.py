@@ -14,19 +14,25 @@ class ActiveProcessorRequest(BaseModel):
 
 @router.get("/processors/list", response_model=List[ProcessorInfo])
 async def get_processors():
-    """Возвращает список доступных процессоров обработки видео"""
+    """
+    Returns a list of all available video stream processors.
+    """
     return plugin_manager.get_available_processors()
 
 @router.get("/processors/active", response_model=Optional[str])
 async def get_active_processor():
-    """Возвращает имя текущего активного процессора"""
+    """
+    Returns the name of the currently active processor, or None.
+    """
     if plugin_manager.active_processor:
         return plugin_manager.active_processor.name
     return None
 
 @router.post("/processors/set")
 async def set_active_processor(request: ActiveProcessorRequest):
-    """Устанавливает активный процессор"""
+    """
+    Sets the active processor by name. Use 'None' to disable processing.
+    """
     success = plugin_manager.set_active_processor(request.name)
     if not success and request.name != "None":
         raise HTTPException(status_code=400, detail=f"Failed to activate processor {request.name}")

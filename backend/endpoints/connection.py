@@ -10,10 +10,10 @@ router = APIRouter()
 @router.get("/api/availability", response_model=AvailabilityResponse)
 def check_availability() -> AvailabilityResponse:
     """
-    Проверяет доступность IP-адреса дрона.
+    Checks if the drone's IP address is reachable.
     
-    Возвращает:
-        AvailabilityResponse: Объект с полем available (bool).
+    Returns:
+        AvailabilityResponse: Object indicating availability status.
     """
     available = check_ip_availability(settings.DRONE_IP)
     return AvailabilityResponse(available=available)
@@ -21,17 +21,16 @@ def check_availability() -> AvailabilityResponse:
 @router.post("/api/connect", response_model=ConnectionResponse)
 def connect_drone_endpoint(drone_service: DroneService = Depends(get_drone_service)) -> ConnectionResponse:
     """
-    Инициирует подключение к дрону.
-    Включает логику проверки IP и повторных попыток.
+    Initiates a connection to the drone, including IP checks and retry logic.
     
-    Аргументы:
-        drone_service (DroneService): Сервис дрона.
+    Args:
+        drone_service (DroneService): Injected drone service instance.
         
-    Возвращает:
-        ConnectionResponse: Статус подключения.
+    Returns:
+        ConnectionResponse: Connection status.
         
-    Исключения:
-        HTTPException: Если IP недоступен (404) или соединение не удалось (500).
+    Raises:
+        HTTPException: 404 if IP is unreachable, 500 if connection fails.
     """
     if not drone_service.connect_with_retries():
          if not check_ip_availability(settings.DRONE_IP):
@@ -46,14 +45,14 @@ def disconnect_drone_endpoint(
     mission_service: MissionService = Depends(get_mission_service)
 ) -> MessageResponse:
     """
-    Отключает дрон и останавливает текущую миссию.
+    Disconnects from the drone and stops any active missions.
     
-    Аргументы:
-        drone_service (DroneService): Сервис дрона.
-        mission_service (MissionService): Сервис миссий.
+    Args:
+        drone_service (DroneService): Injected drone service instance.
+        mission_service (MissionService): Injected mission service instance.
         
-    Возвращает:
-        MessageResponse: Статус операции.
+    Returns:
+        MessageResponse: Operation status message.
     """
     mission_service.stop_mission()
     drone_service.disconnect()

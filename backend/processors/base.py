@@ -3,30 +3,40 @@ import numpy as np
 
 class BaseProcessor(ABC):
     """
-    Базовый класс для всех процессоров видеопотока.
-    Каждый плагин должен наследоваться от этого класса.
+    Base class for all video stream processors.
+    Each plugin must inherit from this class.
     """
     @property
     @abstractmethod
     def name(self) -> str:
-        """Имя процессора для отображения в UI"""
+        """
+        The name of the processor for UI display.
+        """
         pass
         
     @property
     @abstractmethod
     def description(self) -> str:
-        """Краткое описание того, что делает процессор"""
+        """
+        A brief description of what the processor does.
+        """
         pass
 
     @abstractmethod
     def process(self, frame: np.ndarray) -> np.ndarray:
         """
-        Основной метод обработки кадра.
-        :param frame: Исходный кадр в формате BGR (OpenCV/numpy array)
-        :return: Обработанный кадр (с отрисовкой)
+        The primary method for frame processing.
+        
+        Args:
+            frame: Original frame in BGR format (OpenCV/numpy array).
+            
+        Returns:
+            np.ndarray: The processed frame with any drawings or modifications.
         """
         pass
     
     def cleanup(self):
-        """Метод для очистки ресурсов при выключении процессора"""
+        """
+        Method for resource cleanup when the processor is disabled.
+        """
         pass

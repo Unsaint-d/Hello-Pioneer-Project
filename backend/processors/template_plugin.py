@@ -10,40 +10,40 @@ from .base import BaseProcessor
 
 class BaseHandler(ABC):
     """
-    Базовый класс для модулей постобработки.
-    Позволяет разделить логику: отрисовка, сохранение, отправка данных и т.д.
+    Base class for post-processing modules.
+    Enables separation of logic: rendering, saving, data transmission, etc.
     """
     @abstractmethod
     def handle(self, frame: np.ndarray, model_result: Any) -> np.ndarray:
         """
-        :param frame: Кадр для обработки (можно рисовать на нем).
-        :param model_result: Результат работы нейросети (детектированные объекты и т.д.).
-        :return: Измененный (или нет) кадр.
+        Args:
+            frame: The frame to process (can be drawn upon).
+            model_result: Results from the neural network (e.g., detected objects).
+            
+        Returns:
+            np.ndarray: The modified (or original) frame.
         """
         pass
 
     def cleanup(self):
-        """Очистка ресурсов (закрытие файлов и т.д.)"""
+        """
+        Resource cleanup method (e.g., closing files).
+        """
         pass
 
-# --- 2. Примеры реализаций обработчиков ---
-
 class BoundingBoxDrawer(BaseHandler):
-    """Пример обработчика: Рисует рамки вокруг объектов (заглушка)."""
+    """
+    Example handler that draws bounding boxes around detected objects.
+    """
     def handle(self, frame: np.ndarray, model_result: Any) -> np.ndarray:
-        # Пример использования результатов модели
-        # if model_result and 'boxes' in model_result:
-        #     for box in model_result['boxes']:
-        #         cv2.rectangle(frame, ...)
-        
         cv2.putText(frame, "Handler: Drawer Active", (50, 80), 
                     cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 255), 2)
         return frame
 
 class AsyncFileLogger(BaseHandler):
     """
-    Пример обработчика: Асинхронное логирование/сохранение.
-    Использует очередь, чтобы не тормозить видеопоток файловыми операциями.
+    Example handler for asynchronous logging or data saving.
+    Uses a queue to avoid blocking the video stream with file I/O operations.
     """
     def __init__(self):
         self.queue = queue.Queue()
@@ -71,22 +71,18 @@ class AsyncFileLogger(BaseHandler):
         if self.thread.is_alive():
             self.thread.join(timeout=1.0)
 
-# --- 3. Основной Плагин (Orchestrator) ---
-
 class AdvancedTemplatePlugin(BaseProcessor):
     """
-    Продвинутый шаблон плагина с поддержкой цепочки обработчиков.
+    An advanced plugin template supporting a chain of handlers (pipeline).
     """
 
     def __init__(self):
         self._name = "Advanced Modular Plugin (Template)"
-        self._description = "Пример с цепочкой обработчиков (Pipeline)"
+        self._description = "Example with a processing chain (Pipeline)"
         
-        # Инициализация модели
         self.model = None
         self.is_model_loaded = False
         
-        # Список обработчиков (Pipeline)
         self.handlers: List[BaseHandler] = [
             BoundingBoxDrawer(),
             AsyncFileLogger()
@@ -101,37 +97,38 @@ class AdvancedTemplatePlugin(BaseProcessor):
         return self._description
 
     def process(self, frame: np.ndarray) -> np.ndarray:
-        # 1. Инференс (Получение данных от нейросети)
+        """
+        Core processing method that simulates model inference and executes the handler pipeline.
+        """
         if not self.is_model_loaded:
             self._load_model()
             
-        # Заглушка результата модели
         model_result = {"detections": 5, "class": "person"} 
         
-        # 2. Запуск цепочки обработчиков
-        # Каждый handler может модифицировать кадр или делать что-то с данными
         for handler in self.handlers:
             try:
                 frame = handler.handle(frame, model_result)
             except Exception as e:
-                # Ошибка в одном хендлере не должна ронять весь поток
                 print(f"Error in handler {handler.__class__.__name__}: {e}")
 
-        # Дополнительная инфо
         cv2.putText(frame, f"Model Result: {model_result}", (50, 110), 
                     cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
 
         return frame
 
     def cleanup(self):
-        # Очистка всех хендлеров
+        """
+        Cleans up resources for all registered handlers and resets the model state.
+        """
         for handler in self.handlers:
             handler.cleanup()
         
         self.model = None
         self.is_model_loaded = False
-        print(f"Плагин {self.name} остановлен.")
+        print(f"Plugin {self.name} stopped.")
 
     def _load_model(self):
-        # self.model = Yolo(...)
+        """
+        Simulates loading a machine learning model.
+        """
         self.is_model_loaded = True

@@ -28,10 +28,10 @@ class DroneService:
 
     def connect_with_retries(self) -> bool:
         """
-        Пытается установить соединение с дроном с проверкой доступности IP и повторными попытками.
+        Attempts to establish a connection with the drone, verifying IP availability with multiple retries.
         
-        Возвращает:
-            bool: True, если соединение установлено успешно, иначе False.
+        Returns:
+            bool: True if connection is successful, False otherwise.
         """
         is_available = False
         for i in range(3):
@@ -58,10 +58,10 @@ class DroneService:
 
     def connect(self) -> bool:
         """
-        Инициализирует объект Pioneer и пытается подключиться.
+        Initializes the Pioneer object and attempts to connect.
         
-        Возвращает:
-            bool: True, если инициализация прошла без ошибок.
+        Returns:
+            bool: True if initialization completed without errors.
         """
         try:
             if self.drone is not None:
@@ -80,7 +80,7 @@ class DroneService:
 
     def disconnect(self) -> None:
         """
-        Разрывает соединение с дроном и освобождает ресурсы.
+        Terminates the drone connection and releases resources.
         """
         if self.drone:
             try:
@@ -93,13 +93,13 @@ class DroneService:
 
     def get_drone(self) -> Pioneer:
         """
-        Возвращает экземпляр дрона.
+        Returns the drone instance.
         
-        Возвращает:
-            Pioneer: Объект управления дроном.
+        Returns:
+            Pioneer: Drone control object.
             
-        Исключения:
-            HTTPException: Если дрон не подключен (400).
+        Raises:
+            HTTPException: If the drone is not connected (400).
         """
         if self.drone is None:
             raise HTTPException(status_code=400, detail="Нет соединения с дроном")
@@ -107,10 +107,10 @@ class DroneService:
 
     def is_connected(self) -> bool:
         """
-        Проверяет статус подключения.
+        Checks the current connection status.
         
-        Возвращает:
-            bool: True, если дрон подключен и отвечает.
+        Returns:
+            bool: True if the drone is connected and responding.
         """
         if self.drone is None:
             return False
@@ -121,10 +121,10 @@ class DroneService:
 
     def log_message(self, msg: str) -> None:
         """
-        Добавляет сообщение в лог сервера.
+        Appends a message to the server log.
         
-        Аргументы:
-            msg (str): Текст сообщения.
+        Args:
+            msg (str): Message text.
         """
         print(msg, flush=True)
         self.server_logs.append(msg)
@@ -133,20 +133,20 @@ class DroneService:
 
     def get_logs(self) -> List[str]:
         """
-        Возвращает и очищает накопленные логи.
+        Retrieves and clears the accumulated logs.
         
-        Возвращает:
-            List[str]: Список сообщений.
+        Returns:
+            List[str]: List of log messages.
         """
         logs = list(self.server_logs)
         self.server_logs.clear()
         return logs
 
-# Глобальный экземпляр для Dependency Injection
+# Global instance for Dependency Injection
 drone_service = DroneService()
 
 def get_drone_service() -> DroneService:
     """
-    Зависимость для получения экземпляра DroneService.
+    Dependency for retrieving the DroneService instance.
     """
     return drone_service

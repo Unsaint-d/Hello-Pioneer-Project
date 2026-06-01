@@ -7,13 +7,13 @@ router = APIRouter()
 @router.get("/api/status", response_model=StatusResponse)
 def status_drone(drone_service: DroneService = Depends(get_drone_service)) -> StatusResponse:
     """
-    Получает текущий статус дрона и логи.
+    Retrieves the current drone status, including autopilot mode and logs.
     
-    Аргументы:
-        drone_service (DroneService): Сервис дрона.
+    Args:
+        drone_service (DroneService): Injected drone service instance.
         
-    Возвращает:
-        StatusResponse: Статус подключения, режим автопилота и логи.
+    Returns:
+        StatusResponse: Connection status, autopilot state, and server logs.
     """
     logs_to_send = drone_service.get_logs()
     
@@ -34,16 +34,16 @@ def status_drone(drone_service: DroneService = Depends(get_drone_service)) -> St
 @router.get("/api/battery", response_model=BatteryResponse)
 def battery_status(drone_service: DroneService = Depends(get_drone_service)) -> BatteryResponse:
     """
-    Получает напряжение батареи.
+    Retrieves the current battery voltage of the drone.
     
-    Аргументы:
-        drone_service (DroneService): Сервис дрона.
+    Args:
+        drone_service (DroneService): Injected drone service instance.
         
-    Возвращает:
-        BatteryResponse: Напряжение в вольтах.
+    Returns:
+        BatteryResponse: Battery voltage in Volts.
         
-    Исключения:
-        HTTPException: Если дрон не подключен (400) или ошибка получения данных (500).
+    Raises:
+        HTTPException: 400 if disconnected, 500 if data retrieval fails.
     """
     if not drone_service.is_connected():
         raise HTTPException(status_code=400, detail="Drone disconnected")

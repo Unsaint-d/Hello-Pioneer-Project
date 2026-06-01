@@ -6,8 +6,8 @@ from .base import BaseProcessor
 
 class HumanDetectorPlugin(BaseProcessor):
     def __init__(self):
-        self._name = "Human & Face Detector (пример)"
-        self._description = "Плейсхолдер для будущей интеграции плагина"
+        self._name = "Human & Face Detector (example)"
+        self._description = "Placeholder for future plugin integration"
         self.fps = 0
         self.fps_counter = 0
         self.last_fps_calc = time.time()
@@ -21,6 +21,9 @@ class HumanDetectorPlugin(BaseProcessor):
         return self._description
 
     def process(self, frame: np.ndarray) -> np.ndarray:
+        """
+        Simulates human and face detection by overlaying status text and FPS.
+        """
         self.fps_counter += 1
         current_time = time.time()
         if current_time - self.last_fps_calc >= 1.0:

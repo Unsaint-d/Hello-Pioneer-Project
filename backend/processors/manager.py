@@ -26,7 +26,9 @@ class PluginManager:
         self._initialized = True
 
     def discover_plugins(self):
-        """Сканирует папку processors и загружает найденные плагины"""
+        """
+        Scans the processors directory and loads any found plugins.
+        """
         self.processors.clear()
         self.processors_metadata.clear()
         
@@ -63,11 +65,15 @@ class PluginManager:
                     logger.error(f"Failed to load module {filename}: {e}")
 
     def get_available_processors(self) -> List[Dict[str, str]]:
-        """Возвращает список доступных процессоров"""
+        """
+        Returns a list of all available processors and their metadata.
+        """
         return list(self.processors_metadata.values())
 
     def set_active_processor(self, name: str) -> bool:
-        """Устанавливает активный процессор по имени"""
+        """
+        Sets the active processor by its name.
+        """
         if name == "None" or name is None:
             if self.active_processor:
                 self.active_processor.cleanup()
@@ -88,7 +94,9 @@ class PluginManager:
         return False
 
     def process_frame(self, frame):
-        """Обрабатывает кадр активным процессором, если он есть"""
+        """
+        Processes a video frame using the currently active processor.
+        """
         if self.active_processor:
             try:
                 return self.active_processor.process(frame)

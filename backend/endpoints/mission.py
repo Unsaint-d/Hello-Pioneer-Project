@@ -12,18 +12,18 @@ def start_mission_endpoint(
     drone_service: DroneService = Depends(get_drone_service)
 ) -> MessageResponse:
     """
-    Запускает выполнение миссии.
+    Starts the execution of a mission plan.
     
-    Аргументы:
-        plan (MissionPlan): План миссии (валидируется Pydantic).
-        mission_service (MissionService): Сервис миссий.
-        drone_service (DroneService): Сервис дрона.
+    Args:
+        plan (MissionPlan): Validated mission plan object.
+        mission_service (MissionService): Injected mission service instance.
+        drone_service (DroneService): Injected drone service instance.
         
-    Возвращает:
-        MessageResponse: Статус запуска.
+    Returns:
+        MessageResponse: Mission start status.
         
-    Исключения:
-        HTTPException: Если нет соединения (400), ошибка запуска (400) или внутренняя ошибка (500).
+    Raises:
+        HTTPException: 400 if disconnected or plan is invalid, 500 for internal errors.
     """
     if not drone_service.is_connected():
         raise HTTPException(status_code=400, detail="No connection")
@@ -45,17 +45,17 @@ def land_drone_endpoint(
     drone_service: DroneService = Depends(get_drone_service)
 ) -> MessageResponse:
     """
-    Экстренная посадка дрона. Прерывает текущую миссию.
+    Initiates an emergency landing and stops any active mission.
     
-    Аргументы:
-        mission_service (MissionService): Сервис миссий.
-        drone_service (DroneService): Сервис дрона.
+    Args:
+        mission_service (MissionService): Injected mission service instance.
+        drone_service (DroneService): Injected drone service instance.
         
-    Возвращает:
-        MessageResponse: Статус отправки команды.
+    Returns:
+        MessageResponse: Landing command status.
         
-    Исключения:
-        HTTPException: Если нет соединения (400) или ошибка выполнения (500).
+    Raises:
+        HTTPException: 400 if disconnected, 500 for internal errors.
     """
     if not drone_service.is_connected():
         raise HTTPException(status_code=400, detail="No connection")

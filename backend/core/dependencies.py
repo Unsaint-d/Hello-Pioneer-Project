@@ -3,16 +3,16 @@ from services.drone_service import DroneService, get_drone_service
 
 def verify_connected(drone_service: DroneService = Depends(get_drone_service)) -> DroneService:
     """
-    Зависимость для проверки соединения с дроном.
+    Dependency to verify the connection status with the drone.
     
-    Аргументы:
-        drone_service (DroneService): Сервис дрона (injects via Depends).
+    Args:
+        drone_service (DroneService): The drone service instance (injected via Depends).
         
-    Возвращает:
-        DroneService: Если соединение активно.
+    Returns:
+        DroneService: The drone service instance if connected.
         
-    Исключения:
-        HTTPException: Если дрон не подключен (400).
+    Raises:
+        HTTPException: If the drone is not connected (400).
     """
     if not drone_service.is_connected():
         raise HTTPException(status_code=400, detail="Drone disconnected")

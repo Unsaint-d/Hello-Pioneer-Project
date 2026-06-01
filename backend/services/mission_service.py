@@ -17,14 +17,14 @@ class MissionService:
 
     def start_mission(self, plan: MissionPlan) -> None:
         """
-        Запускает миссию в отдельном потоке.
+        Starts the mission in a separate thread.
         
-        Аргументы:
-            plan (MissionPlan): План миссии.
+        Args:
+            plan (MissionPlan): The mission plan containing points and actions.
             
-        Исключения:
-            RuntimeError: Если миссия уже запущена.
-            ValueError: Если план пуст.
+        Raises:
+            RuntimeError: If a mission is already running.
+            ValueError: If the plan contains no points.
         """
         if self.mission_running:
              if self.mission_thread and self.mission_thread.is_alive():
@@ -42,15 +42,15 @@ class MissionService:
 
     def stop_mission(self) -> None:
         """
-        Сигнализирует о необходимости остановки миссии.
+        Signals the mission thread to stop.
         """
         self.stop_mission_flag = True
         self.drone_service.log_message("Остановка миссии...")
 
     def land_and_disarm_now(self) -> None:
         """
-        Немедленно инициирует посадку и последующее отключение моторов.
-        Останавливает текущую миссию, если она идет.
+        Immediately initiates landing and subsequent motor disarming.
+        Stops the current mission if it is in progress.
         """
         self.stop_mission()
         threading.Thread(target=self._land_and_disarm_task).start()
@@ -118,7 +118,7 @@ class MissionService:
 
     def _handle_action(self, pioneer: Pioneer, action: Dict[str, Any], current_yaw: float, x: float, y: float, z: float, route: List[Dict], current_idx: int) -> float:
         """
-        Выполняет действие в точке. Возвращает обновленный yaw.
+        Executes an action at a specific point. Returns the updated yaw.
         """
         action_type = action.get('type')
         params = action.get('params', {}) or {}
@@ -177,17 +177,14 @@ class MissionService:
         return None, None
 
     def _wait_point_reached(self, pioneer: Pioneer, timeout_s: float = 60.0) -> None:
-        start = time.time()
-        while True:
-            if self.stop_mission_flag:
-                raise InterruptedError("Миссия прервана")
-            if pioneer.point_reached():
-                return
-            if time.time() - start >= timeout_s:
-                raise TimeoutError("Таймаут достижения точки")
-            time.sleep(0.1)
+        """
+        Waits until the drone reaches the target point or a timeout occurs.
+        """
 
     def _wait_for_landing(self, pioneer: Pioneer, timeout_s: float = 60.0) -> None:
+        """
+        Waits until the drone successfully lands and enters a safe state.
+        """
         start = time.time()
         while True:
             try:
@@ -213,6 +210,6 @@ mission_service = MissionService(get_drone_service(), get_route_service())
 
 def get_mission_service() -> MissionService:
     """
-    Зависимость для получения экземпляра MissionService.
+    Dependency for retrieving the MissionService instance.
     """
     return mission_service

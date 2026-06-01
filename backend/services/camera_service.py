@@ -43,14 +43,14 @@ class CameraService:
 
     def _try_open_camera(self, index):
         """
-        Пытается открыть камеру, перебирая доступные бэкенды (DSHOW, MSMF, Default).
+        Attempts to open a camera by iterating through available backends (DSHOW, MSMF, Default).
 
         Args:
-            index (int): Индекс камеры.
+            index (int): Camera device index.
 
         Returns:
-            tuple: Кортеж (cv2.VideoCapture, backend_id) в случае успеха,
-                   или (None, None) в случае неудачи.
+            tuple: A tuple containing (cv2.VideoCapture, backend_id) on success,
+                   or (None, None) on failure.
         """
         if platform.system() == 'Windows':
             try:
@@ -81,13 +81,13 @@ class CameraService:
 
     def _open_camera_by_index(self, index):
         """
-        Открывает камеру по индексу, используя известный рабочий бэкенд или выполняя поиск.
+        Opens a camera by its index using a known working backend or by searching for one.
 
         Args:
-            index (int): Индекс камеры.
+            index (int): Camera device index.
 
         Returns:
-            cv2.VideoCapture: Объект захвата видео или None, если камеру не удалось открыть.
+            cv2.VideoCapture: Video capture object or None if the camera could not be opened.
         """
         backend = self.camera_backends.get(index, None)
         cap = None
@@ -110,14 +110,14 @@ class CameraService:
 
     def set_video_source(self, source: str, device_index: int = 0):
         """
-        Устанавливает активный источник видео.
+        Sets the active video source.
 
         Args:
-            source (str): Тип источника ('drone' или 'local').
-            device_index (int, optional): Индекс устройства для локальной камеры. По умолчанию 0.
+            source (str): Source type ('drone' or 'local').
+            device_index (int, optional): Device index for local camera. Defaults to 0.
 
         Raises:
-            ValueError: Если указан неверный источник или не удалось инициализировать камеру.
+            ValueError: If an invalid source is specified or camera initialization fails.
         """
         if source not in ['drone', 'local']:
             raise ValueError("Invalid source. Must be 'drone' or 'local'")
@@ -149,22 +149,22 @@ class CameraService:
 
     def get_video_source(self):
         """
-        Возвращает текущую конфигурацию источника видео.
+        Returns the current video source configuration.
 
         Returns:
-            dict: Словарь с ключами 'source' и 'device_index'.
+            dict: A dictionary containing 'source' and 'device_index' keys.
         """
         return {"source": self.video_source, "device_index": self.device_index}
 
     def get_available_cameras(self, force_refresh=False):
         """
-        Возвращает список доступных локальных камер.
+        Retrieves a list of available local cameras.
 
         Args:
-            force_refresh (bool, optional): Принудительно обновить список устройств. По умолчанию False.
+            force_refresh (bool, optional): Whether to force a refresh of the device list. Defaults to False.
 
         Returns:
-            list: Список словарей с полями 'index' и 'name' для каждой камеры.
+            list: A list of dictionaries, each containing 'index' and 'name' for a camera.
         """
         if not force_refresh and self._cached_cameras is not None:
             return self._cached_cameras
@@ -213,7 +213,7 @@ class CameraService:
 
     def start(self):
         """
-        Запускает поток захвата видео в фоновом режиме.
+        Starts the video capture loop in a background thread.
         """
         if self.running:
             return
@@ -225,7 +225,7 @@ class CameraService:
 
     def stop(self):
         """
-        Останавливает поток захвата видео и освобождает ресурсы камер.
+        Stops the video capture loop and releases camera resources.
         """
         self.running = False
         if self.thread:
@@ -245,8 +245,8 @@ class CameraService:
 
     def _capture_loop(self):
         """
-        Основной цикл захвата и обработки кадров.
-        Работает в отдельном потоке.
+        Main loop for capturing and processing video frames.
+        Runs in a dedicated background thread.
         """
         while self.running:
             try:
@@ -317,10 +317,10 @@ class CameraService:
 
     def get_latest_frame(self):
         """
-        Возвращает последний обработанный кадр.
+        Returns the most recently processed video frame.
 
         Returns:
-            bytes or None: JPEG-изображение в байтах или None.
+            bytes or None: JPEG-encoded image as bytes, or None if no frame is available.
         """
         return self.current_frame
 

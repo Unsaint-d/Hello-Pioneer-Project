@@ -7,16 +7,16 @@ router = APIRouter()
 @router.post("/api/arm", response_model=ControlResponse)
 def arm_drone(drone_service: DroneService = Depends(get_drone_service)) -> ControlResponse:
     """
-    Арминг дрона (включение моторов).
+    Arms the drone (enables motors).
     
-    Аргументы:
-        drone_service (DroneService): Сервис дрона.
+    Args:
+        drone_service (DroneService): Injected drone service instance.
         
-    Возвращает:
-        ControlResponse: Статус операции.
+    Returns:
+        ControlResponse: Operation status message.
         
-    Исключения:
-        HTTPException: Если дрон не подключен (400) или команда отклонена (500).
+    Raises:
+        HTTPException: 400 if disconnected, 500 if the command is refused or fails.
     """
     if not drone_service.is_connected():
         raise HTTPException(status_code=400, detail="Drone disconnected")
@@ -33,16 +33,16 @@ def arm_drone(drone_service: DroneService = Depends(get_drone_service)) -> Contr
 @router.post("/api/disarm", response_model=ControlResponse)
 def disarm_drone(drone_service: DroneService = Depends(get_drone_service)) -> ControlResponse:
     """
-    Дизарминг дрона (выключение моторов).
+    Disarms the drone (disables motors).
     
-    Аргументы:
-        drone_service (DroneService): Сервис дрона.
+    Args:
+        drone_service (DroneService): Injected drone service instance.
         
-    Возвращает:
-        ControlResponse: Статус операции.
+    Returns:
+        ControlResponse: Operation status message.
         
-    Исключения:
-        HTTPException: Если дрон не подключен (400) или команда отклонена (500).
+    Raises:
+        HTTPException: 400 if disconnected, 500 if the command is refused or fails.
     """
     if not drone_service.is_connected():
         raise HTTPException(status_code=400, detail="Drone disconnected")

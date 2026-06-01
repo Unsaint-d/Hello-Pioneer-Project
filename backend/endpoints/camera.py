@@ -11,6 +11,9 @@ class VideoSource(BaseModel):
     device_index: int = 0
 
 def generate_frames():
+    """
+    Generator function that yields JPEG frames for the video stream.
+    """
     no_frame_count = 0
     while True:
         frame = camera_service.get_latest_frame()
@@ -20,9 +23,7 @@ def generate_frames():
                    b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
         else:
             no_frame_count += 1
-            # If no frame for > 5 seconds, stop stream to trigger client error/timeout
             if no_frame_count > 125:
-                # Yielding invalid data to force a decoder error on the client
                 yield b'--frame\r\nContent-Type: image/jpeg\r\n\r\nINVALID\r\n'
                 break
         

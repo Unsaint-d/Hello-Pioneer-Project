@@ -8,16 +8,16 @@ class RouteService:
     @staticmethod
     def parse_flight_plan(plan_json: str) -> List[Dict[str, Any]]:
         """
-        Парсит JSON строку с планом полета в список словарей точек.
+        Parses a JSON string containing a flight plan into a list of point dictionaries.
         
-        Аргументы:
-            plan_json (str): JSON строка плана.
+        Args:
+            plan_json (str): The flight plan JSON string.
             
-        Возвращает:
-            List[Dict[str, Any]]: Список точек маршрута.
+        Returns:
+            List[Dict[str, Any]]: A list of route points.
             
-        Исключения:
-            ValueError: Если JSON некорректен или не содержит нужных полей.
+        Raises:
+            ValueError: If the JSON is invalid or missing required fields.
         """
         if not plan_json or not plan_json.strip():
             raise ValueError("Flight plan JSON is empty")
@@ -60,17 +60,17 @@ class RouteService:
     @staticmethod
     def calculate_yaw_to_target(current_x: float, current_y: float, target_x: float, target_y: float) -> float:
         """
-        Вычисляет угол рыскания (yaw) в радианах от текущей позиции к целевой.
-        Использует конвенцию math.atan2(dx, dy) (0=Север, 90=Восток).
+        Calculates the yaw angle in radians from the current position to a target position.
+        Uses the math.atan2(dx, dy) convention (0=North, 90=East).
         
-        Аргументы:
-            current_x (float): Текущая координата X.
-            current_y (float): Текущая координата Y.
-            target_x (float): Целевая координата X.
-            target_y (float): Целевая координата Y.
+        Args:
+            current_x (float): Current X coordinate.
+            current_y (float): Current Y coordinate.
+            target_x (float): Target X coordinate.
+            target_y (float): Target Y coordinate.
             
-        Возвращает:
-            float: Угол в радианах.
+        Returns:
+            float: Angle in radians.
         """
         dx = target_x - current_x
         dy = target_y - current_y
@@ -79,13 +79,13 @@ class RouteService:
     @staticmethod
     def normalize_yaw(yaw_rad: float) -> float:
         """
-        Нормализует угол yaw в диапазон 0..2pi.
+        Normalizes a yaw angle to the range [0, 2pi).
         
-        Аргументы:
-            yaw_rad (float): Угол в радианах.
+        Args:
+            yaw_rad (float): Angle in radians.
             
-        Возвращает:
-            float: Нормализованный угол.
+        Returns:
+            float: Normalized angle.
         """
         return yaw_rad % (2 * math.pi)
 
@@ -93,6 +93,6 @@ route_service = RouteService()
 
 def get_route_service() -> RouteService:
     """
-    Зависимость для получения экземпляра RouteService.
+    Dependency for retrieving the RouteService instance.
     """
     return route_service
